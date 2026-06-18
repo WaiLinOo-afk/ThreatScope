@@ -27,47 +27,6 @@ Setup notes → [`docs/setup-notes.md`](docs/setup-notes.md)
 
 ---
 
-## Screenshots
-
-### Setup
-![](screenshots/17-splunk-index-syslog.png)
-![](screenshots/18-splunk-index-sysmon.png)
-![](screenshots/19-splunk-index-wineventlog.png)
-![](screenshots/12-soc-dashboard.png)
-
-### T1003.001 — LSASS
-![](screenshots/01-T1003.001-lsass-dump-attempt.png)
-![](screenshots/02-T1003.001-lsass-dump-attempt-2.png)
-![](screenshots/21-T1003.001-splunk-sysmon-detection.png)
-
-### T1059.001 — PowerShell
-![](screenshots/07-T1059.001-powershell-execution-1.png)
-![](screenshots/08-T1059.001-powershell-execution-2.png)
-![](screenshots/09-T1059.001-powershell-execution-3.png)
-![](screenshots/10-T1059.001-powershell-execution-4.png)
-
-### T1053.005 — Scheduled Task
-![](screenshots/05-T1053.005-scheduled-task-sim-1.png)
-![](screenshots/06-T1053.005-scheduled-task-sim-2.png)
-![](screenshots/04-T1053.005-scheduled-task-proof.png)
-![](screenshots/15-T1053.005-sysmon-detection.png)
-
-### T1021.002 — SMB
-![](screenshots/03-T1021.002-smb-admin-share-access.png)
-![](screenshots/14-T1021.002-splunk-smb-detection.png)
-
-### T1046 — Nmap
-![](screenshots/20-T1046-nmap-scan-results.png)
-
-### T1110 — Brute Force
-![](screenshots/11-T1110-hydra-rdp-bruteforce.png)
-![](screenshots/13-T1110-splunk-detection-4625.png)
-
-### Windows Defender
-![](screenshots/16-windef-atomic-redteam-alerts.png)
-
----
-
 ## Known Gaps
 
 - **T1021.002:** Loopback SMB doesn't generate EventCode 4624 LogonType=3. Real lateral movement from a separate machine would fire it.

@@ -584,9 +584,9 @@ earliest=0 index=wineventlog EventCode=4740
 
 **Evidence:**
 
-![T1110 Brute Force Detection](screenshots/Splunk%20Sysmon%20Detection%20-%20T1110%20-%20Brute%20Force%20Detection.png)
 ![T1110 Brute Force Activity](screenshots/T1110.png)
 ![T1110 Brute Force Nmap Pre-scan](screenshots/T1110-BruteForcing.png)
+![T1110 Brute Force Detection](screenshots/Splunk%20Sysmon%20Detection%20-%20T1110%20-%20Brute%20Force%20Detection.png)
 
 ---
 

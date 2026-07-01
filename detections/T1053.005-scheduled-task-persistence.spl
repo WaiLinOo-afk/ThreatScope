@@ -12,7 +12,7 @@
 -- Cleanup: Invoke-AtomicTest T1053.005 -Cleanup
 -- ============================================================
 
-earliest=0 index=sysmon _raw="1"
+earliest=0 index=sysmon _raw="*<EventID>1</EventID>*"
 | rex field=_raw "Name='Image'>(?<Image>[^<]+)"
 | rex field=_raw "Name='CommandLine'>(?<CommandLine>[^<]+)"
 | rex field=_raw "Name='User'>(?<User>[^<]+)"
@@ -21,7 +21,3 @@ earliest=0 index=sysmon _raw="1"
   AND like(lower(CommandLine), "%/create%")
 | table _time, host, User, Image, CommandLine, ParentImage
 | sort -_time
-
--- Supplementary: Check Windows Security log for EventCode 4698 (may not fire on Win11)
--- earliest=0 index=wineventlog EventCode=4698
--- | table _time, host, _raw

@@ -1,0 +1,32 @@
+-- ============================================================
+-- T1110 - Brute Force
+-- Tactic: Credential Access
+-- Data Source: Windows Security EventCode 4625 (Failed Logon), 4740 (Lockout)
+-- ============================================================
+-- Query 1: Detect multiple failed logons from a single source IP
+-- Logic: 5+ failed attempts within a 5-minute window = alert
+-- Tune threshold based on environment baseline (5 is conservative).
+-- ============================================================
+
+earliest=0 index=wineventlog EventCode=4625
+| rex field=_raw "Source Network Address:\t+(?<src_ip>[^\n]+)"
+| rex field=_raw "Account Name:\t+(?<account>[^\n]+)"
+| rex field=_raw "Failure Reason:\t+(?<reason>[^\n]+)"
+| bucket _time span=5m
+| stats count as failed_attempts,
+        values(account) as targeted_accounts,
+        values(reason) as failure_reasons
+  by _time, src_ip
+| where failed_attempts >= 5
+| sort -failed_attempts
+
+-- ============================================================
+-- Query 2: Account lockout event (fires when lockout threshold exceeded)
+-- Requires: net accounts /lockoutthreshold:N to be configured
+-- ============================================================
+
+-- earliest=0 index=wineventlog EventCode=4740
+-- | rex field=_raw "Account Name:\t+(?<locked_account>[^\n]+)"
+-- | rex field=_raw "Caller Computer Name:\t+(?<attacker_host>[^\n]+)"
+-- | table _time, host, locked_account, attacker_host, _raw
+-- | sort -_time

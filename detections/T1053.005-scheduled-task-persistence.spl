@@ -1,0 +1,27 @@
+-- ============================================================
+-- T1053.005 - Scheduled Task/Job: Scheduled Task
+-- Tactic: Persistence
+-- Data Source: Sysmon EventID 1 (Process Create)
+-- ============================================================
+-- Detects schtasks.exe invocations with /create flag, indicating
+-- a new scheduled task is being registered.
+-- NOTE: Windows EventCode 4698 (Scheduled Task Created) is broken
+-- on some Windows 11 builds despite enabling the audit policy:
+--   auditpol /set /subcategory:"Other Object Access Events" /success:enable
+-- This Sysmon-based detection is a reliable alternative.
+-- Cleanup: Invoke-AtomicTest T1053.005 -Cleanup
+-- ============================================================
+
+earliest=0 index=sysmon _raw="1"
+| rex field=_raw "Name='Image'>(?<Image>[^<]+)"
+| rex field=_raw "Name='CommandLine'>(?<CommandLine>[^<]+)"
+| rex field=_raw "Name='User'>(?<User>[^<]+)"
+| rex field=_raw "Name='ParentImage'>(?<ParentImage>[^<]+)"
+| where like(lower(Image), "%schtasks%")
+  AND like(lower(CommandLine), "%/create%")
+| table _time, host, User, Image, CommandLine, ParentImage
+| sort -_time
+
+-- Supplementary: Check Windows Security log for EventCode 4698 (may not fire on Win11)
+-- earliest=0 index=wineventlog EventCode=4698
+-- | table _time, host, _raw

@@ -1,0 +1,30 @@
+-- ============================================================
+-- T1059.001 - Command and Scripting Interpreter: PowerShell
+-- Tactic: Execution
+-- Data Source: Sysmon EventID 1 (Process Create)
+-- ============================================================
+-- Detects PowerShell invocations with flags commonly used for
+-- obfuscation and execution policy bypass:
+--   -EncodedCommand / -enc  : base64-encoded payload
+--   -ExecutionPolicy Bypass : overrides policy restriction
+--   -NonInteractive / -nop  : suppresses user interaction
+--   IEX / Invoke-Expression : executes arbitrary strings
+-- ParentImage provides critical triage context:
+--   powershell.exe spawned by WINWORD.EXE or outlook.exe = almost certainly malicious
+--   powershell.exe spawned by explorer.exe = needs investigation
+-- ============================================================
+
+earliest=0 index=sysmon _raw="1"
+| rex field=_raw "Name='Image'>(?<Image>[^<]+)"
+| rex field=_raw "Name='CommandLine'>(?<CommandLine>[^<]+)"
+| rex field=_raw "Name='ParentImage'>(?<ParentImage>[^<]+)"
+| rex field=_raw "Name='User'>(?<User>[^<]+)"
+| where like(lower(Image), "%powershell%")
+| where like(lower(CommandLine), "%-enc%")
+  OR like(lower(CommandLine), "%-bypass%")
+  OR like(lower(CommandLine), "%-nop%")
+  OR like(lower(CommandLine), "%iex%")
+  OR like(lower(CommandLine), "%invoke-expression%")
+  OR like(lower(CommandLine), "%-windowstyle hidden%")
+| table _time, host, User, Image, CommandLine, ParentImage
+| sort -_time

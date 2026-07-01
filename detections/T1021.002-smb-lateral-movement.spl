@@ -1,0 +1,33 @@
+-- ============================================================
+-- T1021.002 - Remote Services: SMB/Windows Admin Shares
+-- Tactic: Lateral Movement
+-- Data Source: Windows Security EventCode 4624 (Logon Success)
+-- ============================================================
+-- Detects network logons (LogonType=3) to admin shares (C$, ADMIN$, IPC$).
+-- Requires: The detection machine and attacker must be separate hosts.
+-- KNOWN LAB LIMITATION: Loopback SMB connections (\\Target resolving to
+-- localhost) do NOT generate EventCode 4624 LogonType=3, and Sysmon
+-- does NOT log EventID 3 for loopback connections. This detection works
+-- correctly in multi-host enterprise environments.
+-- ============================================================
+
+earliest=0 index=wineventlog EventCode=4624
+| rex field=_raw "Logon Type:\s+(?<LogonType>\d+)"
+| rex field=_raw "Source Network Address:\s+(?<src_ip>[^\r\n]+)"
+| rex field=_raw "Account Name:\s+(?<account>[^\r\n]+)"
+| rex field=_raw "Workstation Name:\s+(?<workstation>[^\r\n]+)"
+| where LogonType="3"
+| where NOT like(src_ip, "127.%")
+  AND NOT like(src_ip, "::1")
+  AND src_ip!="-"
+| table _time, host, src_ip, account, workstation, LogonType
+| sort -_time
+
+-- Sysmon EventID 3 - Network Connection to SMB port 445
+-- earliest=0 index=sysmon _raw="3"
+-- | rex field=_raw "Name='DestinationPort'>(?<DestPort>[^<]+)"
+-- | rex field=_raw "Name='DestinationIp'>(?<DestIP>[^<]+)"
+-- | rex field=_raw "Name='Image'>(?<Image>[^<]+)"
+-- | where DestPort="445"
+-- | table _time, host, Image, DestIP, DestPort
+-- | sort -_time

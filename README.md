@@ -1,4 +1,29 @@
-# SOC Home Lab: Splunk SIEM with MITRE ATT&CK Detection
+# ThreatScope: Splunk SIEM with MITRE ATT&CK Detection
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   ████████╗██╗  ██╗██████╗ ███████╗ █████╗ ████████╗          │
+│      ██╔══╝██║  ██║██╔══██╗██╔════╝██╔══██╗╚══██╔══╝          │
+│      ██║   ███████║██████╔╝█████╗  ███████║   ██║             │
+│      ██║   ██╔══██║██╔══██╗██╔══╝  ██╔══██║   ██║             │
+│      ██║   ██║  ██║██║  ██║███████╗██║  ██║   ██║             │
+│      ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝             │
+│                    S  C  O  P  E                                │
+│                                                                 │
+│   Splunk SIEM  ·  MITRE ATT&CK  ·  Sysmon  ·  Atomic Red Team │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## TL;DR
+
+- Built a two-VM home lab (Windows 11 victim + Kali Linux attacker) with **Splunk Enterprise** as the SIEM, **Sysmon** for endpoint telemetry, and Universal Forwarders on both machines
+- Simulated **6 MITRE ATT&CK techniques** using Atomic Red Team and manual Kali tooling (PowerShell abuse, LSASS dump, scheduled task persistence, SMB lateral movement, brute force, port scan)
+- Achieved **working detections on 4/6 techniques** with SPL queries; documented 2 confirmed gaps (SMB loopback constraint, host-based SIEM can't detect SYN scans) with root-cause analysis
+- Troubleshot real-world issues: Sysmon channel DACL blocking log forwarding, Windows 11 EventCode 4698 audit policy bug, Hydra SMB incompatibility — and documented every fix
+
+---
+
 
 > A fully functional Security Operations Center (SOC) home lab built to simulate real-world threat detection workflows using Splunk Enterprise as the SIEM, Sysmon for endpoint telemetry, and Atomic Red Team for adversary emulation mapped to MITRE ATT&CK.
 
